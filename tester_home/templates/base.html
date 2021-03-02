@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="test platform">
+    <meta name="author" content="lette.xiao">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>XY-Tester</title>
+    {% load static %}
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet"> 
+    <link href="{% static "css/ml-css.css" %}" rel="stylesheet">
+    <link href="https://v3.bootcss.com/examples/dashboard/dashboard.css" rel="stylesheet">
+
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://v3.bootcss.com/assets/js/vendor/holder.min.js"></script>
+
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+    <script src="{% static "js/ml-js.js" %}"></script>
+</head>
+
+<body>
+    {% block base %}
+    {% endblock %}
+</body>
+
+</html>
