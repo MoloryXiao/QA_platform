@@ -72,3 +72,21 @@ def project_modify(request, project_id):
 def project_delete(request, project_id):
     Project.objects.get(id=project_id).delete()
     return HttpResponseRedirect("/project_manage/")
+
+
+def project_search(request):
+    rtn_dict = dict()
+    rtn_dict["username"] = request.session.get("username")
+    rtn_dict["type"] = "list"
+    name = request.POST.get("search_project_name", "")
+    description = request.POST.get("search_project_description", "")
+    if name == "" and description == "":
+        rtn_dict["projects"] = Project.objects.all()
+    elif name != "" and description != "":
+        rtn_dict["projects"] = Project.objects.filter(name__contains=name, description__contains=description)
+    elif name != "":
+        rtn_dict["projects"] = Project.objects.filter(name__contains=name)
+    elif description != "":
+        rtn_dict["projects"] = Project.objects.filter(description__contains=description)
+
+    return render(request, "project_manage.html", rtn_dict)

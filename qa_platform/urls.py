@@ -33,6 +33,7 @@ urlpatterns = [
     path('project_manage/project_modify/<int:project_id>/', views_project.project_modify),
     path('project_manage/project_delete', views_project.project_manage),
     path('project_manage/project_delete/<int:project_id>/', views_project.project_delete),
+    path('project_manage/search', views_project.project_search),
     path('module_manage/', views_module.module_manage),
     path('mock_manage/', views_mock.mock_manage)
 ]
