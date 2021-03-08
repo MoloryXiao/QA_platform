@@ -69,7 +69,7 @@
               <tbody>
                 {% for project in projects %}
                   <tr>
-                    <td>{{project.id}}</td>
+                    <td>{{forloop.counter}}</td>
                     <td>{{project.name}}</td>
                     <td>{{project.description}}</td>
                     <td>
@@ -83,7 +83,7 @@
                     <td>{{project.update_time | date:"Y-m-d H:i:s"}}</td>
                     <td>
                       <button type="button" class="btn btn-success search-element" onclick="location.href='/project_manage/project_modify/{{project.id}}/'">编辑</button>
-                      <button type="button" class="btn btn-danger search-element" onclick="showDeleteModal(this)">删除</button>
+                      <button type="button" class="btn btn-danger search-element" onclick="showDeleteProjectModal(this)">删除</button>
                     </td>
                   </tr>
                 {% endfor %}

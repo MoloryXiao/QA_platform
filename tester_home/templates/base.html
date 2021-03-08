@@ -2,15 +2,15 @@
 <html lang="en">
 
 <head>
+    {% load static %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="test platform">
     <meta name="author" content="lette.xiao">
-    <link rel="icon" href="../../favicon.ico">
+    <link rel="icon" href="{% static "img/favicon.ico" %}">
 
     <title>XY-Tester</title>
-    {% load static %}
     <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet"> 
     <link href="{% static "css/ml-css.css" %}" rel="stylesheet">
     <link href="https://v3.bootcss.com/examples/dashboard/dashboard.css" rel="stylesheet">
@@ -20,6 +20,10 @@
 
     <script src="{% static "js/bootstrap.min.js" %}"></script>
     <script src="{% static "js/ml-js.js" %}"></script>
+    <script src="{% static "js/formValidation.js" %}"></script>
+    <script src="{% static "js/zh_CN.js" %}"></script>
+    <script src="{% static "js/bootstrap.js" %}"></script>
+
 </head>
 
 <body>

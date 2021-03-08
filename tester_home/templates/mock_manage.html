@@ -39,16 +39,18 @@
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h3 class="sub-header">通用Mock</h3>
-          <form class="form form-inline" id="form-search" action="/search/" method="post">
+          <form class="form form-inline" id="form-search" action="/mock_manage/search" method="post">
+              {% csrf_token %}
               <div class="form-group">
-                  <input type="text" class="form-control search-element" name="business_name" id="business_name" placeholder="业务名称">
-                  <input type="text" class="form-control search-element" name="business_tag" id="business_tag" placeholder="业务标识">
+                  <input type="text" class="form-control search-element" name="search_business_name" placeholder="业务名称">
+                  <input type="text" class="form-control search-element" name="search_business_tag" placeholder="业务标识">
                   <button type="submit" class="btn btn-info search-element"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> 搜索</button>
+
                   <button type="button" class="btn btn-default search-element" onclick="clear_input();"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> 清除</button>
                   <button type="button" id="btn-add-business" class="btn btn-success search-element"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增业务</button>
               </div>
           </form>
-          <div class="table-responsive" style="margin-top: 20px;">
+          <div class="table-responsive" style="margin-top: 20px;" id="div_mock_config">
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
@@ -66,79 +68,160 @@
               <tbody>
                 {% for mock_config in mock_configs %}
                   <tr>
-                    <td>{{mock_config.id}}</td>
+                    <td>{{forloop.counter}}</td>
                     <td>{{mock_config.business_name}}</td>
-                    <td>{{mock_config.message_format}}</td>
-                    <td>{{mock_config.mock_type}}</td>
+                    <td>{{mock_config.business_tag}}</td>
+                    <td>
+                        {% if mock_config.message_format == 1 %}json
+                        {% elif mock_config.message_format == 2 %}xml
+                        {% elif mock_config.message_format == 3 %}form
+                        {% else %}未知
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if mock_config.mock_type == 1 %}完整链接匹配
+                        {% elif mock_config.mock_type == 2 %}请求报文参数匹配
+                        {% else %}未知
+                        {% endif %}
+                    </td>
                     <td>{{mock_config.mock_match_field}}</td>
-                    <td>{{mock_config.is_diff_merchant}}</td>
+                    <td>
+                        {% if mock_config.is_diff_merchant == 0 %}否
+                        {% elif mock_config.is_diff_merchant == 1 %}是
+                        {% endif %}
+                    </td>
                     <td>{{mock_config.merchant_field}}</td>
-                    <td><button type="button" class="btn btn-success search-element">编辑</button><button type="button" class="btn btn-danger search-element">删除</button></td>
+                    <td><button type="button" class="btn btn-success search-element">编辑</button>
+                        <button type="button" class="btn btn-danger search-element" onclick="showDeleteMockConfigModal(this);">删除</button></td>
                   </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
-          <div class="modal fade" id="addBusinessModal" tabindex="-1" role="dialog" aria-labelledby="addBusinessModalLabel">
-              <div class="modal-dialog" role="document">
-                  <div class="modal-content" style="padding: 20px;">
-                      <div class="modal-header">
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                          <h4 class="modal-title" id="addBusinessModalLabel">新增业务</h4>
-                      </div>
-                      <div class="modal-body">
-                          <div class="form-group">
-                              <label for="txt_departmentname">业务名称: </label>
-                              <input type="text" name="txt_departmentname" class="form-control" id="txt_departmentname" placeholder="部门名称">
-                          </div>
-                          <div class="form-group">
-                              <label for="txt_parentdepartment">唯一标识: </label>
-                              <input type="text" name="txt_parentdepartment" class="form-control" id="txt_parentdepartment" placeholder="上级部门">
-                          </div>
-                          <div class="form-group">
-                            <label for="txt_departmentname">报文格式: </label>
-                            <label class="radio-inline">
-                              <input type="radio" value="option1" name="sex">json
-                            </label>
-                            <label class="radio-inline">
-                              <input type="radio" value="option2" name="sex">xml
-                            </label>
-                            <label class="radio-inline">
-                              <input type="radio" value="option3" name="sex">form
-                            </label>
-                          </div>
-                          <div class="form-group">
-                              <label for="txt_statu">mock匹配方式: </label>
-                              <input type="text" name="txt_statu" class="form-control" id="txt_statu" placeholder="状态">
-                          </div>
-                          <div class="form-group">
-                              <label for="txt_statu" style="display: block;">接口匹配字段: </label>
-                              <label class="radio-inline">
-                                <input type="radio" value="option1" name="sex">通用地址前缀+业务标识+接口标识
-                              </label>
-                              <label class="radio-inline">
-                                <input type="radio" value="option2" name="sex">通用地址前缀+业务标识，接口标识从请求参数获取
-                              </label>
-                          </div>
-                          <div class="form-group">
-                              <label for="txt_statu">区分商户号: </label>
-                              <label class="radio-inline">
-                                <input type="radio" value="option1" name="sex">是
-                              </label>
-                              <label class="radio-inline">
-                                <input type="radio" value="option2" name="sex">否
-                              </label>
-                          </div>
-                      </div>
-                      <div class="modal-footer">
-                          <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 关闭</button>
-                          <button type="button" id="btn_submit" class="btn btn-success" data-dismiss="modal"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> 保存</button>
-                      </div>
-                  </div>
-              </div>
-          </div>
+
         </div>
       </div>
+    </div>
+
+    <!-- 模态框 信息新增 -->
+    <div class="modal fade" id="addBusinessModal" tabindex="-1" role="dialog" aria-labelledby="addBusinessModalLabel">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content" style="padding: 20px;">
+              <form action="/mock_manage/mock_add" method="post" class="form-horizontal" id="add_business_form">
+                  {% csrf_token %}
+                  <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clear_modal_form();"><span aria-hidden="true">×</span></button>
+                      <h4 class="modal-title" id="addBusinessModalLabel">新增业务</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">业务名称: </label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="add_business_name" id="add_business_name" placeholder="Business Name" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">唯一标识: </label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="add_business_tag" id="add_business_tag" placeholder="Unique Tag" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">报文格式: </label>
+                        <div class="col-sm-6">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="add_message_format" value="1" checked/> json
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="add_message_format" value="2" /> xml
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="add_message_format" value="3" /> form
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">mock匹配方式: </label>
+                        <div class="col-sm-6">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="add_mock_type" value="1" /> 完整链接匹配
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="add_mock_type" value="2" /> 请求报文参数匹配
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">接口匹配字段: </label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="add_mock_match_field" id="add_mock_match_field" placeholder="Match Field" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">区分商户号: </label>
+                        <div class="col-sm-6">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="add_is_diff_merchant" value="1" onclick="visible_merchant_field()"/> 是
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="add_is_diff_merchant" value="0" onclick="invisible_merchant_field()" checked/> 否
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="div_merchant_field" hidden>
+                        <label class="col-sm-3 control-label">商户号取值字段: </label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="add_merchant_field" id="add_merchant_field" placeholder="Merchant Field" />
+                        </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" onclick="clear_modal_form();"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 关闭</button>
+                      <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> 保存</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+    </div>
+
+    <!-- 模态框 信息删除确认 -->
+    <div class="modal fade" id="deleteMockConfigModal">
+    <div class="modal-dialog">
+        <div class="modal-content message_align">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">提示</h4>
+            </div>
+            <div class="modal-body">
+              <span hidden="true" id="cfm_mock_config_id"></span>
+              <p>您删除的项目配置为「<span id="cfm_mock_config_info"></span>」，是否确认？</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="deleteMockConfigConfirm();">确认</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
     </div>
   <script>
   $("#btn-add-business").click(function () {

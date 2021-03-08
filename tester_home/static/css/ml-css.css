@@ -18,3 +18,11 @@
 	width:45%;
 	margin-top:14px;
 }
+#div_mock_config .table thead tr th{
+	vertical-align: middle;
+	text-align: center;
+}
+#div_mock_config .table tbody tr td{
+	vertical-align: middle;
+	text-align: center;
+}
