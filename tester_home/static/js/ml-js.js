@@ -56,6 +56,12 @@ function visible_merchant_field(){
 function invisible_merchant_field(){
     document.getElementById("div_merchant_field").setAttribute("hidden",true);
 }
+function visible_merchant_field_mod(){
+    document.getElementById("div_merchant_field_modify").removeAttribute("hidden");
+}
+function invisible_merchant_field_mod(){
+    document.getElementById("div2_merchant_field_modify").setAttribute("hidden",true);
+}
 
 function clear_modal_form(){
 //    document.getElementById("add_business_form").reset();
@@ -90,23 +96,6 @@ $(document).ready(function() {
 	                        min: 3,
 	                        max: 15,
 	                        message: '唯一标识字段必须在3-15个字符之间'
-	                    },
-	                    regexp: {
-	                        regexp: /^[a-zA-Z0-9_\.]+$/,
-	                        message: '接口匹配字段只能是字符'
-	                    }
-	                }
-	            },
-	            add_mock_match_field: {
-	                row: '.col-sm-6',
-	                validators: {
-	                    notEmpty: {
-	                        message: '接口匹配字段不能为空'
-	                    },
-	                    stringLength: {
-	                        min: 3,
-	                        max: 15,
-	                        message: '接口匹配字段必须在3-15个字符之间'
 	                    },
 	                    regexp: {
 	                        regexp: /^[a-zA-Z0-9_\.]+$/,

@@ -40,6 +40,7 @@ urlpatterns = [
     path('mock_manage/mock_add', views_mock.mock_add),
     path('mock_manage/search', views_mock.mock_search),
     path('mock_manage/mock_delete', views_mock.mock_manage),
-    path('mock_manage/mock_delete/<int:mock_config_id>/', views_mock.mock_delete)
-
+    path('mock_manage/mock_delete/<int:mock_config_id>/', views_mock.mock_delete),
+    path('mock_manage/mock_modify', views_mock.mock_manage),
+    path('mock_manage/mock_modify/<int:mock_config_id>/', views_mock.mock_modify),
 ]

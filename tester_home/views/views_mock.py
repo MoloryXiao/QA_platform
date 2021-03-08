@@ -9,6 +9,7 @@ def mock_manage(request):
     rtn_dict = dict()
     rtn_dict["username"] = request.session.get("username")
     rtn_dict["mock_configs"] = MockConfig.objects.all()
+    rtn_dict["type"] = "list"
     return render(request, "mock_manage.html", rtn_dict)
 
 
@@ -57,38 +58,54 @@ def mock_add(request):
                                   status=1)
         return HttpResponseRedirect("/mock_manage/")
 
-#
-# def mock_modify(request, mock_id):
-#     rtn_dict = dict()
-#     rtn_dict["username"] = request.session.get("username")
-#
-#     p = mock.objects.get(id=mock_id)
-#     rtn_dict["mock_id"] = mock_id
-#     rtn_dict["mock_name"] = p.name
-#     rtn_dict["mock_description"] = p.description
-#     rtn_dict["mock_status"] = p.status
-#
-#     if request.method == "GET":
-#         rtn_dict["type"] = "modify"
-#         return render(request, "mock_manage.html", rtn_dict)
-#     else:
-#         rtn_dict["type"] = "list"
-#         p.name = request.POST.get("mock_name", "")
-#         p.description  = request.POST.get("mock_description", "")
-#         if request.POST.getlist("is_valid"):
-#             p.status = request.POST.getlist("is_valid")[0]
-#         else:
-#             p.status = 0
-#
-#         if p.name == '':
-#             rtn_dict["type"] = "modify"
-#             rtn_dict["error_info"] = "项目名称不能为空，修改失败！"
-#             return render(request, "mock_manage.html", rtn_dict)
-#
-#         p.save()
-#         return HttpResponseRedirect("/mock_manage/")
-#
-#
+
+def mock_modify(request, mock_config_id):
+    rtn_dict = dict()
+    rtn_dict["username"] = request.session.get("username")
+
+    m = MockConfig.objects.get(id=mock_config_id)
+    rtn_dict["mock_config"] = m
+    print(m.business_name, m.business_tag, m.mock_match_field, m.merchant_field)
+    print(m.message_format, m.mock_type, m.is_diff_merchant)
+
+    if request.method == "GET":
+        rtn_dict["type"] = "modify"
+        return render(request, "mock_manage.html", rtn_dict)
+    else:
+        m.business_name = request.POST.get("modify_business_name", "")
+        m.business_tag = request.POST.get("modify_business_tag", "")
+        m.mock_match_field = request.POST.get("modify_mock_match_field", "")
+        m.merchant_field = request.POST.get("modify_merchant_field", "")
+
+        if m.business_name == '':
+            rtn_dict["type"] = "modify"
+            rtn_dict["error_info"] = "业务名称不能为空，修改失败！"
+            return render(request, "mock_manage.html", rtn_dict)
+        elif m.business_tag == '':
+            m.message_format = 2
+            rtn_dict["type"] = "modify"
+            rtn_dict["error_info"] = "唯一标识不能为空，修改失败！"
+            return render(request, "mock_manage.html", rtn_dict)
+
+        rtn_dict["type"] = "list"
+        if request.POST.getlist("modify_message_format"):
+            m.message_format = request.POST.getlist("modify_message_format")[0]
+        else:
+            m.message_format = 0
+
+        if request.POST.getlist("modify_mock_type"):
+            m.mock_type = request.POST.getlist("modify_mock_type")[0]
+        else:
+            m.mock_type = 0
+
+        if request.POST.getlist("modify_is_diff_merchant"):
+            m.is_diff_merchant = request.POST.getlist("modify_is_diff_merchant")[0]
+        else:
+            m.is_diff_merchant = 0
+
+        m.save()
+        print("save")
+        return HttpResponseRedirect("/mock_manage/")
 
 
 def mock_delete(request, mock_config_id):
