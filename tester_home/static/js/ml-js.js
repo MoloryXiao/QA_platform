@@ -60,7 +60,7 @@ function visible_merchant_field_mod(){
     document.getElementById("div_merchant_field_modify").removeAttribute("hidden");
 }
 function invisible_merchant_field_mod(){
-    document.getElementById("div2_merchant_field_modify").setAttribute("hidden",true);
+    document.getElementById("div_merchant_field_modify").setAttribute("hidden",true);
 }
 
 function clear_modal_form(){

@@ -65,8 +65,6 @@ def mock_modify(request, mock_config_id):
 
     m = MockConfig.objects.get(id=mock_config_id)
     rtn_dict["mock_config"] = m
-    print(m.business_name, m.business_tag, m.mock_match_field, m.merchant_field)
-    print(m.message_format, m.mock_type, m.is_diff_merchant)
 
     if request.method == "GET":
         rtn_dict["type"] = "modify"
@@ -77,31 +75,32 @@ def mock_modify(request, mock_config_id):
         m.mock_match_field = request.POST.get("modify_mock_match_field", "")
         m.merchant_field = request.POST.get("modify_merchant_field", "")
 
+        rtn_dict["type"] = "list"
+        if request.POST.getlist("modify_message_format"):
+            m.message_format = int(request.POST.getlist("modify_message_format")[0])
+        else:
+            m.message_format = 0
+
+        if request.POST.getlist("modify_mock_type"):
+            m.mock_type = int(request.POST.getlist("modify_mock_type")[0])
+        else:
+            m.mock_type = 0
+
+        if request.POST.getlist("modify_is_diff_merchant"):
+            m.is_diff_merchant = int(request.POST.getlist("modify_is_diff_merchant")[0])
+            if m.is_diff_merchant == 0:
+                m.merchant_field = ''
+        else:
+            m.is_diff_merchant = 0
+
         if m.business_name == '':
             rtn_dict["type"] = "modify"
             rtn_dict["error_info"] = "业务名称不能为空，修改失败！"
             return render(request, "mock_manage.html", rtn_dict)
         elif m.business_tag == '':
-            m.message_format = 2
             rtn_dict["type"] = "modify"
             rtn_dict["error_info"] = "唯一标识不能为空，修改失败！"
             return render(request, "mock_manage.html", rtn_dict)
-
-        rtn_dict["type"] = "list"
-        if request.POST.getlist("modify_message_format"):
-            m.message_format = request.POST.getlist("modify_message_format")[0]
-        else:
-            m.message_format = 0
-
-        if request.POST.getlist("modify_mock_type"):
-            m.mock_type = request.POST.getlist("modify_mock_type")[0]
-        else:
-            m.mock_type = 0
-
-        if request.POST.getlist("modify_is_diff_merchant"):
-            m.is_diff_merchant = request.POST.getlist("modify_is_diff_merchant")[0]
-        else:
-            m.is_diff_merchant = 0
 
         m.save()
         print("save")
