@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block base %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">XY-Tester</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">{{username}}</a></li>
+            <li><a href="/logout/">退出</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Search...">
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="/project_manage/">项目管理</a></li>
+            <li><a href="/module_manage/">模块管理</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">用例管理</a></li>
+            <li><a href="">任务管理</a></li>
+            <li><a href="/mock_manage/">Mock工具</a></li>
+            <li><a href="">测试工具</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+
+          {% if type == "list" %}
+          <!-- 项目列表 -->
+          <h3 class="sub-header">项目管理</h3>
+          <form class="form form-inline" id="form-search" action="/project_manage/search" method="post">
+            {% csrf_token %}
+              <div class="form-group">
+                  <input type="text" class="form-control search-element" name="search_project_name" placeholder="项目名称">
+                  <input type="text" class="form-control search-element" name="search_project_description" placeholder="项目描述">
+                  <button type="submit" class="btn btn-info search-element"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> 搜索</button>
+                  <button type="button" class="btn btn-default search-element" onclick="clear_input();"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> 清除</button>
+                  <button type="button" id="btn-add-project" class="btn btn-success search-element" onclick="location.href='/project_manage/project_add'"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增项目</button>
+              </div>
+          </form>
+          <div class="table-responsive" style="margin-top: 20px;">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>项目名称</th>
+                  <th>项目描述</th>
+                  <th>项目状态</th>
+                  <th>创建时间</th>
+                  <th>更新时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for project in projects %}
+                  <tr>
+                    <td hidden>{{project.id}}</td>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{project.name}}</td>
+                    <td>{{project.description}}</td>
+                    <td>
+                      {% if project.status == True%}
+                        开启
+                      {% else %}
+                        关闭
+                      {% endif %}
+                    </td>
+                    <td>{{project.create_time | date:"Y-m-d H:i:s"}}</td>
+                    <td>{{project.update_time | date:"Y-m-d H:i:s"}}</td>
+                    <td>
+                      <button type="button" class="btn btn-success search-element" onclick="location.href='/project_manage/project_modify/{{project.id}}/'">编辑</button>
+                      <button type="button" class="btn btn-danger search-element" onclick="showDeleteProjectModal(this)">删除</button>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+
+          {% elif type == "add" %}
+          <!-- 项目添加 -->
+          <h3 class="sub-header">项目添加</h3>
+
+          <form class="form-horizontal" method="POST" action="/project_manage/project_add">
+            {% csrf_token %}
+            <fieldset>
+              <div class="input-group add-project-item">
+                <span class="input-group-addon">项目名称 :</span>
+                <input type="text" name="project_name" class="form-control" placeholder="必填">
+                <span style="color:red">{{error_info}}</span>
+              </div>
+              <div class="input-group add-project-item">
+                <span class="input-group-addon">项目描述 :</span>
+                <textarea placeholder="选填" name="project_description" class="form-control" ></textarea>
+              </div>
+              <div class="input-group add-project-item">
+                <label class="control-label">状态：</label>
+                <div class="form-check">
+                  <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" value="1" name="is_valid"> 是否开启
+                  </label>
+                </div>
+              </div>
+              <div class="control-group add-project-item">
+                <div class="controls">
+                  <button class="btn btn-success">确认</button>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+
+          {% elif type == "modify" %}
+          <!-- 项目修改 -->
+          <h3 class="sub-header">项目修改</h3>
+
+          <form class="form-horizontal" method="POST" action="/project_manage/project_modify/{{project_id}}/">
+            {% csrf_token %}
+            <fieldset>
+              <div class="input-group add-project-item">
+                <span class="input-group-addon">项目名称 :</span>
+                <input type="text" name="project_name" class="form-control" placeholder="必填" value="{{project_name}}">
+                
+              </div>
+              <span style="color:red">{{error_info}}</span>
+              <div class="input-group add-project-item">
+                <span class="input-group-addon">项目描述 :</span>
+                <textarea placeholder="选填" name="project_description" class="form-control">{{project_description}}</textarea>
+              </div>
+              <div class="input-group add-project-item">
+                <label class="control-label">状态：</label>
+                <div class="form-check">
+                  <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" value="1" name="is_valid" {% if project_status == 1%}checked='checked'{% endif %}> 是否开启
+                  </label>
+                </div>
+              </div>
+              <div class="control-group add-project-item">
+                <div class="controls">
+                  <button class="btn btn-success">确认</button>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+          
+          {% endif %}
+          <!-- 模态框 信息删除确认 -->
+          <div class="modal fade" id="deleteProjectModal">
+            <div class="modal-dialog">
+                <div class="modal-content message_align">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title">提示</h4>
+                    </div>
+                    <div class="modal-body">
+                      <span hidden="true" id="cfm_project_id"></span>
+                      <p>您删除的项目为「<span id="cfm_project_info"></span>」，是否确认？</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default"
+                            data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" onclick="deleteProjectConfirm();">确认</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

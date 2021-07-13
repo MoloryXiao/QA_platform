@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+{% verbatim myblock %}
+<div id="app">
+    <input type="text" v-model="name" />
+    {{name}}
+    <br/>
+    {{message}}
+    <br/>
+    <button @click="add">add</button>
+    {{number}}
+    <div :class="myclass">div_test</div>
+</div>
+<script type="text/javascript">
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!',
+            name: '',
+            number: 1,
+            myclass: 'tt'
+
+        },
+        methods: {
+            add: function(){
+                this.number = this.number+1
+            }
+        }
+    })
+
+</script>
+{% endverbatim myblock %}
+<style>
+    .tt{
+        font-size: 30px;
+    }
+</style>
+</body>
+</html>
