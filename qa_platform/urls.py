@@ -31,4 +31,6 @@ urlpatterns = [
     path('mock_manage/', include('apps.mock.urls')),
 
     path('vue_test/', include('apps.vuetest.urls')),
+
+    # path('api/', include('rest_framework.urls'))
 ]

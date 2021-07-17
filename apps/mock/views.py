@@ -2,10 +2,12 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required   # 登录态装饰器
 from apps.mock.models import MockConfig
 from django.http import HttpResponseRedirect
+from utils.viewer_ip import tag_user_ip
 
 
 @login_required
 def mock_manage(request):
+    tag_user_ip(request=request, location="Mock页")
     rtn_dict = dict()
     rtn_dict["username"] = request.session.get("username")
     rtn_dict["mock_configs"] = MockConfig.objects.all()

@@ -19,3 +19,14 @@ class MockConfig(models.Model):
 
     def __str__(self):
         return self.business_name
+
+
+class ViewerIp(models.Model):
+    FuiId = models.AutoField(primary_key=True)
+    user_ip = models.CharField(db_column='FuiUserIp', max_length=64)
+    location = models.CharField(db_column='FstrLocation', max_length=256, default='')
+    views_count = models.IntegerField(db_column='FuiViewsCount')
+    create_time = models.DateTimeField(db_column='FuiCreateTime')
+
+    class Meta:
+        db_table = 't_view_ip'

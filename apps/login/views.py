@@ -2,12 +2,13 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
 from django.contrib import auth     # 登录验证模块
-from django.contrib.auth.decorators import login_required   # 登录态装饰器
+from utils.viewer_ip import tag_user_ip
 
 
 def login(request):
     if request.method == "GET":
-        return render(request,"index.html")
+        tag_user_ip(request=request, location="Login页")
+        return render(request, "index.html")
     else:
         name = request.POST.get("username", "")
         password = request.POST.get("password", "")

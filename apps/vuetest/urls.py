@@ -11,8 +11,15 @@
  注意：本内容仅限于小赢科技有限责任公司内部传阅，禁止外泄以及用于其他的商业目的。
 """
 from django.urls import path
-from apps.vuetest import views
 
+from apps.vuetest import views
+from rest_framework.routers import DefaultRouter
+
+
+router = DefaultRouter()
+# router.register(r'projects', views.ProjectViewSet)
 urlpatterns = [
-    path('', views.index),
+    # path('', views.index),
+    path('projects/', views.ProjectsList.as_view())
 ]
+# urlpatterns += router.urls
