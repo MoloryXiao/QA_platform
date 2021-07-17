@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 
 from django.contrib import auth     # 登录验证模块
 from utils.viewer_ip import tag_user_ip
+from django.contrib.auth.decorators import login_required # 登录态装饰器
 
 
 def login(request):
